@@ -66,7 +66,7 @@ body {
     font-size: var(--font-size-base);
     line-height: 1.6;
     color: var(--dark-gray);
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: linear-gradient(135deg, #1e293b 0%, #334155 25%, #f1f5f9 50%, #e2e8f0 100%);
     overflow-x: hidden;
 }
 
@@ -440,7 +440,20 @@ body {
 /* About Section */
 .about {
     padding: var(--spacing-3xl) 0;
-    background: var(--very-light-gray);
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #2d3748 100%);
+    color: var(--white);
+    position: relative;
+}
+
+.about::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(229, 62, 62, 0.05) 0%, transparent 50%, rgba(229, 62, 62, 0.03) 100%);
+    z-index: 1;
 }
 
 .about-content {
@@ -448,6 +461,8 @@ body {
     grid-template-columns: 1fr 1.1fr;
     gap: var(--spacing-3xl);
     align-items: center;
+    position: relative;
+    z-index: 2;
 }
 
 .about-text .section-header {
@@ -457,9 +472,13 @@ body {
 
 .about-text p {
     font-size: var(--font-size-lg);
-    color: var(--medium-gray);
+    color: #e2e8f0;
     margin-bottom: var(--spacing-xl);
     line-height: 1.7;
+}
+
+.about .section-header h2 {
+    color: var(--white);
 }
 
 .about-highlights {
@@ -473,9 +492,11 @@ body {
     align-items: flex-start;
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(10px);
 }
 
 .highlight i {
@@ -487,12 +508,12 @@ body {
 .highlight h4 {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--dark-gray);
+    color: var(--white);
     margin-bottom: var(--spacing-xs);
 }
 
 .highlight p {
-    color: var(--medium-gray);
+    color: #cbd5e1;
     font-size: var(--font-size-sm);
     margin: 0;
 }
@@ -770,9 +791,21 @@ body {
 
 /* Footer */
 .footer {
-    background: var(--dark-gray);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     color: var(--white);
     padding: var(--spacing-3xl) 0 var(--spacing-xl);
+    position: relative;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(229, 62, 62, 0.03) 0%, transparent 50%, rgba(229, 62, 62, 0.05) 100%);
+    z-index: 1;
 }
 
 .footer-content {
@@ -780,6 +813,8 @@ body {
     grid-template-columns: 2fr 1fr 1fr;
     gap: var(--spacing-2xl);
     margin-bottom: var(--spacing-2xl);
+    position: relative;
+    z-index: 2;
 }
 
 .footer-logo-img {
@@ -809,9 +844,11 @@ body {
 }
 
 .footer-bottom {
-    border-top: 1px solid var(--medium-gray);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     padding-top: var(--spacing-lg);
     text-align: center;
+    position: relative;
+    z-index: 2;
 }
 
 .footer-bottom p {
