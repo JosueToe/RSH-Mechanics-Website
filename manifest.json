@@ -1,0 +1,22 @@
+{
+  "name": "RSG Mobile Mechanics",
+  "short_name": "RSG Mechanics",
+  "description": "Professional mobile auto repair and diagnostics in South Florida",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e53e3e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["business", "automotive"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+}

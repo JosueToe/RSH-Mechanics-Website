@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - RSG Mobile Mechanics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f7fafc 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2d3748;
+        }
+        
+        .error-container {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+        }
+        
+        .error-icon {
+            font-size: 4rem;
+            color: #e53e3e;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        
+        p {
+            font-size: 1.125rem;
+            color: #4a5568;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.15s ease-in-out;
+            border: 2px solid transparent;
+        }
+        
+        .cta-button.primary {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .cta-button.primary:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+        }
+        
+        .cta-button.secondary {
+            background: white;
+            color: #e53e3e;
+            border-color: #e53e3e;
+        }
+        
+        .cta-button.secondary:hover {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        @media (max-width: 480px) {
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .cta-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="fas fa-wrench"></i>
+        </div>
+        <h1>Page Not Found</h1>
+        <p>Sorry, we couldn't find the page you're looking for. But don't worry - we're here to help fix your vehicle!</p>
+        <div class="cta-buttons">
+            <a href="/" class="cta-button primary">
+                <i class="fas fa-home"></i>
+                Go Home
+            </a>
+            <a href="tel:8632239932" class="cta-button secondary">
+                <i class="fas fa-phone"></i>
+                Call Now
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Netlify redirects file
+/phone tel:8632239932 302
+/call tel:8632239932 302
+/text sms:8632239932 302
+/sms sms:8632239932 302
+
+# SEO-friendly redirects
+/services /#services 301
+/about /#about 301
+/contact /#contact 301
+/es /?lang=es 301
+/spanish /?lang=es 301
+
+# Fallback
+/* /index.html 200

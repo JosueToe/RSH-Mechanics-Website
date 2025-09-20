@@ -1,0 +1,25 @@
+# Image Directory
+
+Please replace these placeholder files with your actual images:
+
+## Required Images:
+
+1. **rsg-logo.jpg** - Your RSG Mobile Mechanics logo (recommended: 300x150px)
+2. **reiner-with-van.jpg** - Photo of Reiner with the service van (recommended: 800x600px)
+3. **work-1.jpg** - Photo of mechanical work #1 (recommended: 600x600px)
+4. **work-2.jpg** - Photo of mechanical work #2 (recommended: 600x600px)
+5. **work-3.jpg** - Photo of mechanical work #3 (recommended: 600x600px)
+6. **work-4.jpg** - Photo of mechanical work #4 (recommended: 600x600px)
+7. **favicon.ico** - Website favicon (16x16px, 32x32px, 48x48px)
+
+## Image Optimization Tips:
+
+- Use JPEG for photos (smaller file sizes)
+- Use PNG for logos with transparency
+- Optimize images for web (compress without losing quality)
+- Consider WebP format for better compression
+- Keep file sizes under 500KB for faster loading
+
+## Current Status:
+
+The website will work without these images, but will show broken image placeholders. Upload your actual images to replace the placeholders for the best user experience.
