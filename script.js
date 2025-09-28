@@ -136,12 +136,19 @@ class MobileMenu {
         this.menuBtn = document.querySelector('.mobile-menu-btn');
         this.navLinks = document.querySelector('.nav-links');
         this.isOpen = false;
+        
+        console.log('MobileMenu constructor - menuBtn:', this.menuBtn);
+        console.log('MobileMenu constructor - navLinks:', this.navLinks);
+        
         this.init();
     }
 
     init() {
         if (this.menuBtn && this.navLinks) {
-            this.menuBtn.addEventListener('click', () => {
+            console.log('MobileMenu init - adding click listener');
+            this.menuBtn.addEventListener('click', (e) => {
+                console.log('Mobile menu button clicked!');
+                e.preventDefault();
                 this.toggle();
             });
 
@@ -150,6 +157,16 @@ class MobileMenu {
                 if (this.isOpen && !this.menuBtn.contains(e.target) && !this.navLinks.contains(e.target)) {
                     this.close();
                 }
+            });
+            
+            // Close menu when clicking on nav links
+            const navLinks = this.navLinks.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (this.isOpen) {
+                        this.close();
+                    }
+                });
             });
 
             // Close menu when window is resized to desktop
@@ -162,6 +179,7 @@ class MobileMenu {
     }
 
     toggle() {
+        console.log('Toggle called, isOpen:', this.isOpen);
         if (this.isOpen) {
             this.close();
         } else {
@@ -170,37 +188,23 @@ class MobileMenu {
     }
 
     open() {
-        this.navLinks.style.display = 'flex';
-        this.navLinks.style.flexDirection = 'column';
-        this.navLinks.style.position = 'absolute';
-        this.navLinks.style.top = '70px';
-        this.navLinks.style.left = '0';
-        this.navLinks.style.right = '0';
-        this.navLinks.style.background = 'rgba(255, 255, 255, 0.98)';
-        this.navLinks.style.backdropFilter = 'blur(10px)';
-        this.navLinks.style.padding = '20px';
-        this.navLinks.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-        this.navLinks.style.borderTop = '1px solid var(--light-gray)';
-        
+        console.log('Opening mobile menu');
+        this.navLinks.classList.add('mobile-open');
         this.menuBtn.innerHTML = '<i class="fas fa-times"></i>';
         this.isOpen = true;
+        
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = 'hidden';
+        console.log('Mobile menu opened, classes:', this.navLinks.className);
     }
 
     close() {
-        this.navLinks.style.display = '';
-        this.navLinks.style.flexDirection = '';
-        this.navLinks.style.position = '';
-        this.navLinks.style.top = '';
-        this.navLinks.style.left = '';
-        this.navLinks.style.right = '';
-        this.navLinks.style.background = '';
-        this.navLinks.style.backdropFilter = '';
-        this.navLinks.style.padding = '';
-        this.navLinks.style.boxShadow = '';
-        this.navLinks.style.borderTop = '';
-        
+        this.navLinks.classList.remove('mobile-open');
         this.menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
         this.isOpen = false;
+        
+        // Re-enable body scroll
+        document.body.style.overflow = '';
     }
 }
 
@@ -362,10 +366,16 @@ class PerformanceOptimizer {
 
 // Initialize all modules when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing modules...');
+    
     // Initialize all functionality
     new LanguageManager();
     new SmoothScroll();
-    new MobileMenu();
+    
+    // Initialize mobile menu with debug logging
+    const mobileMenu = new MobileMenu();
+    console.log('Mobile menu initialized:', mobileMenu);
+    
     new NavbarScrollEffect();
     new ScrollAnimations();
     new PhoneFormatter();
