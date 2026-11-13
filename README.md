@@ -28,11 +28,12 @@ Mechanics sign in at `/portal.html`, fill a mobile-friendly form, and watch a li
 
 1. Netlify dashboard → **Identity** → **Enable Identity**
 2. Set registration to **Invite only**
-3. Invite the mechanic’s email
-4. Mechanic opens **Accept the invite** → site sends them to `/portal.html` → set password → staff portal opens
-5. Later sign-ins: `https://yoursite.com/portal.html`
+3. (Recommended) Identity → **Emails** → edit **Invitation**: paste `emails/invitation.html` so the link goes to `/portal.html#invite_token=...`
+4. Invite the mechanic’s email
+5. **Accept the invite** opens a password form on the site → then `/portal.html`
+6. Later sign-ins: `https://yoursite.com/portal.html`
 
-If an old invite only opened the homepage (no password box), **send a new invite** after this fix is deployed — the previous token may already be used up.
+If an old invite showed only the homepage, **deploy this fix**, hard-refresh once (or clear site data), then **send a new invite** — old tokens can expire after a failed attempt.
 
 Drafts autosave in the browser on that device.
 

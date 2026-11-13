@@ -1,75 +1,76 @@
 // Service Worker for RSG Mobile Mechanics
-// Provides basic caching for better performance
+// Network-first for HTML so Identity invite links always get the latest page.
 
-const CACHE_NAME = 'rsg-mobile-mechanics-v1';
+const CACHE_NAME = 'rsg-mobile-mechanics-v3';
 const urlsToCache = [
-  '/',
-  '/index.html',
   '/styles.css',
   '/script.js',
   '/images/rsg-logo.jpg',
-  '/images/reiner-with-van.jpg',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+  '/images/reiner-with-van.jpg'
 ];
 
-// Install event - cache resources
-self.addEventListener('install', function(event) {
+self.addEventListener('install', function (event) {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(function (cache) {
+      return cache.addAll(urlsToCache);
+    })
   );
 });
 
-// Fetch event - serve from cache when possible
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request).then(
-          function(response) {
-            // Check if we received a valid response
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            var responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(function(cache) {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
-      })
-    );
+self.addEventListener('activate', function (event) {
+  event.waitUntil(
+    caches.keys().then(function (cacheNames) {
+      return Promise.all(
+        cacheNames
+          .filter(function (name) { return name !== CACHE_NAME; })
+          .map(function (name) { return caches.delete(name); })
+      );
+    }).then(function () {
+      return self.clients.claim();
+    })
+  );
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
+function isHtmlRequest(request) {
+  if (request.mode === 'navigate') return true;
+  const accept = request.headers.get('accept') || '';
+  return accept.includes('text/html');
+}
+
+self.addEventListener('fetch', function (event) {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+
+  // Always prefer network for HTML (invite tokens, portal, deploys)
+  if (isHtmlRequest(request)) {
+    event.respondWith(
+      fetch(request)
+        .then(function (response) {
+          return response;
         })
-      );
+        .catch(function () {
+          return caches.match(request).then(function (cached) {
+            return cached || caches.match('/index.html');
+          });
+        })
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(request).then(function (cached) {
+      if (cached) return cached;
+      return fetch(request).then(function (response) {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(function (cache) {
+          cache.put(request, copy);
+        });
+        return response;
+      });
     })
   );
 });
