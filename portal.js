@@ -35,6 +35,15 @@
         userEmailEl.textContent = '';
     }
 
+    function identityHashType() {
+        const h = location.hash || '';
+        if (h.includes('invite_token=')) return 'invite';
+        if (h.includes('recovery_token=')) return 'recovery';
+        if (h.includes('confirmation_token=')) return 'confirmation';
+        if (h.includes('access_token=')) return 'login';
+        return '';
+    }
+
     function initAuth() {
         if (!window.netlifyIdentity) {
             showToast('Netlify Identity failed to load.', true);
@@ -42,12 +51,26 @@
         }
 
         netlifyIdentity.on('init', (user) => {
-            if (user) showApp(user.email);
-            else showLogin();
+            if (user) {
+                showApp(user.email);
+                return;
+            }
+            showLogin();
+            // Invite / reset links open the password form automatically
+            const kind = identityHashType();
+            if (kind === 'invite' || kind === 'recovery' || kind === 'confirmation') {
+                netlifyIdentity.open(kind === 'recovery' ? 'recovery' : 'signup');
+                showToast(kind === 'invite'
+                    ? 'Set your password to accept the invite'
+                    : 'Complete the account form to continue');
+            }
         });
         netlifyIdentity.on('login', (user) => {
             showApp(user.email);
             netlifyIdentity.close();
+            if (identityHashType()) {
+                history.replaceState(null, '', location.pathname + location.search);
+            }
         });
         netlifyIdentity.on('logout', () => showLogin());
         netlifyIdentity.init();

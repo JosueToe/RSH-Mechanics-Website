@@ -29,7 +29,8 @@ Mechanics sign in at `/portal.html`, fill a mobile-friendly form, and watch a li
 1. Netlify dashboard → **Identity** → **Enable Identity**
 2. Set registration to **Invite only**
 3. Invite the mechanic’s email
-4. Sign in at `https://yoursite.netlify.app/portal.html`
+4. Open the invite → **Accept the invite** → set a password on `/portal.html` (the homepage forwards invite links there)
+5. Sign in at `https://yoursite.netlify.app/portal.html` (or your domain `/portal.html`)
 
 Drafts autosave in the browser on that device.
 

@@ -456,9 +456,22 @@
 
     <!-- Scripts -->
     <!-- Leaflet JavaScript for maps -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
     <script src="script.js"></script>
+    <!-- Netlify Identity invite/reset links land on the homepage; send them to the portal -->
+    <script>
+        (function () {
+            var h = window.location.hash || '';
+            if (
+                h.indexOf('invite_token=') !== -1 ||
+                h.indexOf('recovery_token=') !== -1 ||
+                h.indexOf('confirmation_token=') !== -1
+            ) {
+                window.location.replace('/portal.html' + h);
+            }
+        })();
+    </script>
 </body>
 </html>
