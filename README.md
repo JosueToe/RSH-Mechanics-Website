@@ -20,7 +20,18 @@ A modern, responsive landing page for RSG Mobile Mechanics - Professional mobile
 - Font Awesome icons
 - Google Fonts (Inter)
 
-## Setup Instructions
+## Staff Portal (Work Authorization)
+
+Mechanics sign in at `/portal.html`, fill a mobile-friendly form, and watch a live paper preview update. Export as **PDF**, **Word**, **Image**, or **Print**.
+
+### Enable Netlify Identity (required for production login)
+
+1. Netlify dashboard → **Identity** → **Enable Identity**
+2. Set registration to **Invite only**
+3. Invite the mechanic’s email
+4. Sign in at `https://yoursite.netlify.app/portal.html`
+
+Drafts autosave in the browser on that device.
 
 ### 1. Add Your Images
 
@@ -54,6 +65,9 @@ The interactive map uses OpenStreetMap via Leaflet.js - **no API key required!**
 
 ```
 ├── index.html          # Main landing page
+├── portal.html         # Staff estimate portal (Netlify Identity)
+├── portal.css          # Portal styles + print layout
+├── portal.js           # Auth, form, calculations, exports
 ├── styles.css          # All CSS styles
 ├── script.js           # JavaScript functionality
 ├── netlify.toml        # Netlify configuration

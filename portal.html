@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="RSG Mechanics staff portal — work authorization and estimates">
+    <title>Staff Portal | RSG Mobile Mechanics</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="portal.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+    <!-- Login -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card">
+            <img src="images/rsg-logo.jpg" alt="RSG Mobile Mechanics" class="login-logo">
+            <h1>Staff Portal</h1>
+            <p>Sign in to create work authorizations and estimates.</p>
+            <button type="button" id="btn-login" class="btn btn-primary btn-block">
+                <i class="fas fa-sign-in-alt"></i> Sign in with Netlify
+            </button>
+            <a href="/" class="back-home"><i class="fas fa-arrow-left"></i> Back to website</a>
+        </div>
+    </div>
+
+    <!-- App -->
+    <div id="app" class="app" hidden>
+        <header class="portal-top">
+            <div class="portal-top-inner">
+                <div class="portal-brand">
+                    <img src="images/rsg-logo.jpg" alt="" class="portal-logo">
+                    <div>
+                        <h1>Work Authorization</h1>
+                        <p>Fill the form · preview updates live · export when ready</p>
+                        <span id="user-email" class="user-email"></span>
+                    </div>
+                </div>
+                <div class="portal-top-actions">
+                    <button type="button" id="btn-logout" class="btn btn-ghost">
+                        <i class="fas fa-sign-out-alt"></i> Log out
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="export-bar no-print" id="export-bar">
+            <button type="button" class="btn btn-primary" data-action="pdf">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="word">
+                <i class="fas fa-file-word"></i> Word
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="image">
+                <i class="fas fa-image"></i> Image
+            </button>
+            <button type="button" class="btn btn-secondary" data-action="print">
+                <i class="fas fa-print"></i> Print
+            </button>
+            <button type="button" class="btn btn-ghost" data-action="clear">
+                <i class="fas fa-eraser"></i> Clear
+            </button>
+        </div>
+
+        <p id="status-toast" class="status-toast" hidden role="status"></p>
+
+        <main class="wrap">
+            <!-- Entry panel -->
+            <section class="panel no-print">
+                <h2>Authorization details</h2>
+
+                <div class="group">
+                    <h3>Customer &amp; document</h3>
+                    <div class="grid">
+                        <div class="field">
+                            <label for="estimateInvoice">Document title</label>
+                            <select id="estimateInvoice" data-out="estimateInvoice">
+                                <option value="">Select…</option>
+                                <option>Estimate</option>
+                                <option>Invoice</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="name">Customer name</label>
+                            <input id="name" data-out="name" autocomplete="name">
+                        </div>
+                        <div class="field">
+                            <label for="date">Estimate date</label>
+                            <input id="date" type="date" data-out="date">
+                        </div>
+                        <div class="field">
+                            <label for="time">Estimate time</label>
+                            <input id="time" type="time" data-out="time">
+                        </div>
+                        <div class="field">
+                            <label for="complete">Work completed date</label>
+                            <input id="complete" type="date" data-out="complete">
+                            <p class="hint">Required for invoices — date the work was finished.</p>
+                        </div>
+                        <div class="field">
+                            <label for="pay">Intended payment method</label>
+                            <select id="pay" data-out="pay">
+                                <option value=""></option>
+                                <option>Cash</option>
+                                <option>Check</option>
+                                <option>Visa</option>
+                                <option>Mastercard</option>
+                                <option>Amex</option>
+                            </select>
+                        </div>
+                        <div class="field wide">
+                            <label>Written estimate choice <span class="req-note">(customer must choose)</span></label>
+                            <div class="choices">
+                                <label><input type="radio" name="estimate" value="request"> I request a written estimate.</label>
+                                <label><input type="radio" name="estimate" value="limit"> I do not request a written estimate as long as repair costs do not exceed the amount below.</label>
+                                <label><input type="radio" name="estimate" value="none"> I do not request a written estimate.</label>
+                            </div>
+                            <p class="hint">Left blank on the document until the customer selects one.</p>
+                        </div>
+                        <div class="field">
+                            <label for="limit">Do-not-exceed amount (USD)</label>
+                            <input id="limit" type="number" step="0.01" min="0" data-out="limit" inputmode="decimal">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <h3>Contact information</h3>
+                    <div class="grid">
+                        <div class="field wide">
+                            <label for="address">Street address</label>
+                            <input id="address" data-out="address" autocomplete="street-address">
+                        </div>
+                        <div class="field">
+                            <label for="city">City</label>
+                            <input id="city" data-out="city" autocomplete="address-level2">
+                        </div>
+                        <div class="field">
+                            <label for="state">State</label>
+                            <input id="state" data-out="state" value="FL" maxlength="2" autocomplete="address-level1">
+                        </div>
+                        <div class="field">
+                            <label for="zip">ZIP</label>
+                            <input id="zip" data-out="zip" inputmode="numeric" autocomplete="postal-code">
+                        </div>
+                        <div class="field">
+                            <label for="home">Home phone</label>
+                            <input id="home" type="tel" data-out="home" autocomplete="tel">
+                        </div>
+                        <div class="field">
+                            <label for="work">Work phone</label>
+                            <input id="work" type="tel" data-out="work">
+                        </div>
+                        <div class="field">
+                            <label for="authorized">Other authorized person</label>
+                            <input id="authorized" data-out="authorized">
+                        </div>
+                        <div class="field">
+                            <label for="authorizedPhone">Their phone</label>
+                            <input id="authorizedPhone" type="tel" data-out="authorizedPhone">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <h3>Vehicle</h3>
+                    <div class="grid">
+                        <div class="field">
+                            <label for="yearmake">Year / make</label>
+                            <input id="yearmake" data-out="yearmake" placeholder="e.g. 2019 Honda">
+                        </div>
+                        <div class="field">
+                            <label for="model">Model</label>
+                            <input id="model" data-out="model">
+                        </div>
+                        <div class="field">
+                            <label for="tag">Tag</label>
+                            <input id="tag" data-out="tag">
+                        </div>
+                        <div class="field">
+                            <label for="vin">VIN</label>
+                            <input id="vin" data-out="vin" maxlength="17" class="vin">
+                        </div>
+                        <div class="field">
+                            <label for="milesIn">Miles in</label>
+                            <input id="milesIn" type="number" min="0" data-out="milesIn" inputmode="numeric">
+                        </div>
+                        <div class="field">
+                            <label for="milesOut">Miles out</label>
+                            <input id="milesOut" type="number" min="0" data-out="milesOut" inputmode="numeric">
+                        </div>
+                        <div class="field wide">
+                            <label>Save old parts <span class="req-note">(customer must choose)</span></label>
+                            <div class="choices inline">
+                                <label><input type="radio" name="saveparts" value="Yes"> Yes</label>
+                                <label><input type="radio" name="saveparts" value="No"> No (core may apply)</label>
+                            </div>
+                            <p class="hint">Left blank on the document until the customer selects Yes or No.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <h3>Complaint &amp; repair</h3>
+                    <div class="grid">
+                        <div class="field wide">
+                            <label for="complaint">Customer complaint / problem</label>
+                            <textarea id="complaint" data-out="complaint" rows="3"></textarea>
+                        </div>
+                        <div class="field wide">
+                            <label>Description of repairs (line items)</label>
+                            <div id="repairs-entry"></div>
+                            <button type="button" id="add-repair" class="btn btn-ghost btn-sm">
+                                <i class="fas fa-plus"></i> Add repair line
+                            </button>
+                        </div>
+                        <div class="field wide">
+                            <label>Labor charges based on</label>
+                            <div class="choices inline">
+                                <label><input type="radio" name="laborbasis" value="Flat rate"> Flat rate</label>
+                                <label><input type="radio" name="laborbasis" value="Hourly rate"> Hourly rate</label>
+                                <label><input type="radio" name="laborbasis" value="Both apply"> Both apply</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="flat">Flat rate amount (USD)</label>
+                            <input id="flat" type="number" step="0.01" min="0" data-out="flat" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="hourly">Hourly rate (USD)</label>
+                            <input id="hourly" type="number" step="0.01" min="0" data-out="hourly" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="diag">Estimate / diagnostic fee (USD)</label>
+                            <input id="diag" type="number" step="0.01" min="0" data-out="diag" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="diagbasis">Estimate fee basis</label>
+                            <input id="diagbasis" data-out="diagbasis" placeholder="e.g., diagnostic labor at hourly rate">
+                        </div>
+                        <div class="field wide">
+                            <label for="warranty">Repair warranty / guarantee &amp; time or mileage period</label>
+                            <textarea id="warranty" data-out="warranty" rows="2" placeholder="State what is guaranteed and the time/mileage period, or enter no warranty."></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="storage">Storage fee per day (USD)</label>
+                            <input id="storage" type="number" step="0.01" min="0" data-out="storage" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="teardown">Tear down / reassembly fee (USD)</label>
+                            <input id="teardown" type="number" step="0.01" min="0" data-out="teardown" inputmode="decimal">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <h3>Parts &amp; totals</h3>
+                    <p class="hint">Qty · Part # · Description · Code (* U/R/RC/NC/RD) · Price</p>
+                    <div id="parts-entry"></div>
+                    <button type="button" id="add-part" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-plus"></i> Add part
+                    </button>
+
+                    <div class="grid totals-grid">
+                        <div class="field">
+                            <label for="laborcharge">Labor charges (USD)</label>
+                            <input id="laborcharge" type="number" step="0.01" min="0" data-out="laborcharge" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="sublet">Sublet / other (USD)</label>
+                            <input id="sublet" type="number" step="0.01" min="0" data-out="sublet" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="extracharges">Extra charges (USD)</label>
+                            <input id="extracharges" type="number" step="0.01" min="0" data-out="extracharges" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="extrachargesnote">Extra charges description</label>
+                            <input id="extrachargesnote" data-out="extrachargesnote" placeholder="What the extra charge is for">
+                        </div>
+                        <div class="field">
+                            <label for="extraApprovedBy">Extra charges — approved by</label>
+                            <input id="extraApprovedBy" data-out="extraApprovedBy" placeholder="Customer / authorized person name">
+                        </div>
+                        <div class="field">
+                            <label for="extraApprovalDate">Approval date</label>
+                            <input id="extraApprovalDate" type="date" data-out="extraApprovalDate">
+                        </div>
+                        <div class="field">
+                            <label for="extraApprovalTime">Approval time</label>
+                            <input id="extraApprovalTime" type="time" data-out="extraApprovalTime">
+                        </div>
+                        <div class="field">
+                            <label>Approval method</label>
+                            <div class="choices inline">
+                                <label><input type="radio" name="extraApprovalMethod" value="Oral"> Oral</label>
+                                <label><input type="radio" name="extraApprovalMethod" value="Written"> Written</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="extraTakenBy">Approval taken by</label>
+                            <input id="extraTakenBy" data-out="extraTakenBy" placeholder="Staff member who took the approval">
+                        </div>
+                        <div class="field">
+                            <label for="supplies">Shop supplies (USD)</label>
+                            <input id="supplies" type="number" step="0.01" min="0" data-out="supplies" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="tax">Tax (USD)</label>
+                            <input id="tax" type="number" step="0.01" min="0" data-out="tax" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="mandatedlaw">Mandated fee — name of law / statute</label>
+                            <input id="mandatedlaw" data-out="mandatedlaw" placeholder="e.g., FS 403.718 (tire) / FS 403.7185 (battery)">
+                        </div>
+                        <div class="field">
+                            <label for="mandatedfee">Mandated fee amount (USD)</label>
+                            <input id="mandatedfee" type="number" step="0.01" min="0" data-out="mandatedfee" inputmode="decimal" placeholder="0.00">
+                        </div>
+                        <div class="field">
+                            <label for="subtotal">Subtotal (USD)</label>
+                            <input id="subtotal" type="number" step="0.01" min="0" data-out="subtotal" inputmode="decimal">
+                        </div>
+                        <div class="field">
+                            <label for="total">Total (USD)</label>
+                            <input id="total" type="number" step="0.01" min="0" data-out="total" class="total-input" inputmode="decimal">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-actions">
+                    <button type="button" class="btn btn-primary" data-action="pdf">
+                        <i class="fas fa-file-pdf"></i> Save PDF
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-action="clear">
+                        Clear form
+                    </button>
+                </div>
+            </section>
+
+            <!-- Live paper preview -->
+            <section class="preview-wrap">
+                <div class="preview-label no-print">Live preview</div>
+                <div class="preview">
+                    <div class="paper" id="paper">
+                        <h2>RSG MECHANICS SERV LLC.</h2>
+                        <div class="shop">
+                            20465 SW 200th ST · MIAMI, FL 33187 · 863-223-9932<br>
+                            MVR- #92747 &nbsp;&nbsp; MV-111653
+                        </div>
+                        <div class="doc-title" id="out-docType"></div>
+
+                        <div class="statutory-notice">
+                            <div>PLEASE READ CAREFULLY, CHECK ONE OF THE STATEMENTS BELOW, AND SIGN:</div>
+                            <p>I UNDERSTAND THAT, UNDER STATE LAW, I AM ENTITLED TO A WRITTEN ESTIMATE IF MY FINAL BILL WILL EXCEED $150.</p>
+                            <div class="notice-choice"><span id="check-request">☐</span><span>I REQUEST A WRITTEN ESTIMATE.</span></div>
+                            <div class="notice-choice">
+                                <span id="check-limit">☐</span>
+                                <span>I DO NOT REQUEST A WRITTEN ESTIMATE AS LONG AS THE REPAIR COSTS DO NOT EXCEED $ <span class="notice-fill" id="out-limit"></span>. THE SHOP MAY NOT EXCEED THIS AMOUNT WITHOUT MY WRITTEN OR ORAL APPROVAL.</span>
+                            </div>
+                            <div class="notice-choice"><span id="check-none">☐</span><span>I DO NOT REQUEST A WRITTEN ESTIMATE.</span></div>
+                            <div class="sign-row">
+                                <div class="sign-line">SIGNED</div>
+                                <div class="sign-line">DATE</div>
+                            </div>
+                        </div>
+
+                        <div class="psection">
+                            <div class="prow two">
+                                <div class="slot"><b>Customer name: </b><span id="out-name"></span></div>
+                                <div class="slot"><b>Intended payment method: </b><span id="out-pay"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="psection">
+                            <div class="phead">Contact information</div>
+                            <div class="prow">
+                                <div class="slot"><b>Estimate date: </b><span id="out-date"></span></div>
+                                <div class="slot"><b>Estimate time: </b><span id="out-time"></span></div>
+                                <div class="slot"><b>Work completed: </b><span id="out-complete"></span></div>
+                                <div class="slot"><b>Home phone: </b><span id="out-home"></span></div>
+                            </div>
+                            <div class="prow">
+                                <div class="slot span-2"><b>Address: </b><span id="out-address"></span></div>
+                                <div class="slot"><b>City: </b><span id="out-city"></span></div>
+                                <div class="slot"><b>State / ZIP: </b><span id="out-state"></span> <span id="out-zip"></span></div>
+                            </div>
+                            <div class="prow">
+                                <div class="slot"><b>Work phone: </b><span id="out-work"></span></div>
+                                <div class="slot"><b>Other authorized person: </b><span id="out-authorized"></span></div>
+                                <div class="slot"><b>Phone: </b><span id="out-authorizedPhone"></span></div>
+                                <div class="slot"></div>
+                            </div>
+                        </div>
+
+                        <div class="psection">
+                            <div class="phead">Vehicle information</div>
+                            <div class="prow">
+                                <div class="slot"><b>Year / Make: </b><span id="out-yearmake"></span></div>
+                                <div class="slot"><b>Model: </b><span id="out-model"></span></div>
+                                <div class="slot"><b>Tag: </b><span id="out-tag"></span></div>
+                                <div class="slot"><b>VIN: </b><span id="out-vin"></span></div>
+                            </div>
+                            <div class="prow">
+                                <div class="slot"><b>Miles in: </b><span id="out-milesIn"></span></div>
+                                <div class="slot"><b>Miles out: </b><span id="out-milesOut"></span></div>
+                                <div class="slot"><b>Save old parts: </b><span id="sp-yes">☐ Yes</span> &nbsp; <span id="sp-no">☐ No (core may apply)</span></div>
+                                <div class="slot part-codes">* U/Used R/Rebuilt RC/Reconditioned NC/No Chg/Warranty RD/Reduced</div>
+                            </div>
+                        </div>
+
+                        <div class="psection">
+                            <div class="phead">Customer complaint / problem</div>
+                            <div class="slot tall" id="out-complaint"></div>
+                        </div>
+
+                        <div class="psection">
+                            <div class="phead">Description of repairs</div>
+                            <div class="prow">
+                                <div class="slot span-2">
+                                    <b>Labor charges based on: </b>
+                                    <span id="lb-flat">☐ Flat rate</span> &nbsp;
+                                    <span id="lb-hourly">☐ Hourly rate</span> &nbsp;
+                                    <span id="lb-both">☐ Both apply</span>
+                                </div>
+                                <div class="slot"><b>Flat rate: </b>USD <span id="out-flat"></span></div>
+                                <div class="slot"><b>Hourly rate: </b>USD <span id="out-hourly"></span></div>
+                            </div>
+                            <div class="prow two">
+                                <div class="slot"><b>Estimate / diagnostic fee: </b>USD <span id="out-diag"></span></div>
+                                <div class="slot"><b>Estimate fee basis: </b><span id="out-diagbasis"></span></div>
+                            </div>
+                            <div class="prow">
+                                <div class="slot span-2"><b>Warranty / guarantee: </b><span id="out-warranty"></span></div>
+                                <div class="slot"><b>Storage / day: </b>USD <span id="out-storage"></span></div>
+                                <div class="slot"></div>
+                            </div>
+                            <table class="tbl">
+                                <thead>
+                                    <tr>
+                                        <th style="width:8%">#</th>
+                                        <th>DESCRIPTION OF REPAIRS</th>
+                                        <th style="width:18%">LABOR</th>
+                                        <th style="width:18%">CHARGES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="out-repairs"></tbody>
+                            </table>
+                            <p class="part-codes" style="margin:4px 0 2px">Parts (* codes apply below)</p>
+                            <table class="tbl">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%">QTY</th>
+                                        <th style="width:18%">PART NO.</th>
+                                        <th>DESCRIPTION</th>
+                                        <th style="width:8%">*</th>
+                                        <th style="width:14%">PRICE</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="out-parts"></tbody>
+                            </table>
+                            <div class="prow two">
+                                <div class="slot"><b>Labor charges: </b>USD <span id="out-laborcharge"></span></div>
+                                <div class="slot"><b>Tear down / reassembly fee: </b>USD <span id="out-teardown"></span></div>
+                            </div>
+                            <p class="legal">A storage fee may be applied to vehicles not claimed within 3 working days of notification of completion.</p>
+                        </div>
+
+                        <div class="psection">
+                            <div class="phead">Authorization and fees</div>
+                            <div class="prow two">
+                                <div class="slot"><b>Subtotal: </b>USD <span id="out-subtotal"></span></div>
+                                <div class="slot total-slot"><b>TOTAL: </b>USD <span id="out-total"></span></div>
+                            </div>
+                            <div class="prow">
+                                <div class="slot"><b>Parts: </b>USD <span id="out-partstotal"></span></div>
+                                <div class="slot"><b>Labor: </b>USD <span id="out-laborcharge2"></span></div>
+                                <div class="slot"><b>Sublet / other: </b>USD <span id="out-sublet"></span></div>
+                                <div class="slot"><b>Shop supplies: </b>USD <span id="out-supplies"></span></div>
+                            </div>
+                            <div class="prow">
+                                <div class="slot"><b>Extra charges: </b>USD <span id="out-extracharges"></span></div>
+                                <div class="slot span-2"><b>Extra charges for: </b><span id="out-extrachargesnote"></span></div>
+                                <div class="slot"><b>Tax: </b>USD <span id="out-tax"></span></div>
+                            </div>
+                            <div class="prow">
+                                <div class="slot"><b>Approved by: </b><span id="out-extraApprovedBy"></span></div>
+                                <div class="slot"><b>Approval date: </b><span id="out-extraApprovalDate"></span></div>
+                                <div class="slot"><b>Approval time: </b><span id="out-extraApprovalTime"></span></div>
+                                <div class="slot"><b>Oral / Written: </b><span id="am-oral">☐ Oral</span> &nbsp; <span id="am-written">☐ Written</span></div>
+                            </div>
+                            <div class="prow two">
+                                <div class="slot"><b>Approval taken by: </b><span id="out-extraTakenBy"></span></div>
+                                <div class="slot"></div>
+                            </div>
+                            <div class="prow two">
+                                <div class="slot"><b>Mandated fee law: </b><span id="out-mandatedlaw"></span></div>
+                                <div class="slot"><b>Mandated fee amount: </b>USD <span id="out-mandatedfee"></span></div>
+                            </div>
+                            <p class="legal">**This charge represents costs and profits to the motor vehicle repair facility for miscellaneous shop supplies or waste disposal. The shop-supplies amount is listed above.</p>
+                            <p class="legal">***If a state or federal law requires a fee to be collected, the shop must identify the law and the specific amount of the fee. Mandated fee identification and amount are listed above.</p>
+                            <p class="legal">***Florida law requires a USD 1.00 fee for each new tire sold (FS 403.718) and USD 1.50 for each new or remanufactured battery sold (FS 403.7185).</p>
+                            <p class="legal">Estimate good for 30 days. Not responsible for damage caused by theft, fire or acts of nature. I authorize the above repairs, including sublet work, and necessary materials. Shop employees may operate my vehicle for testing, inspection and delivery at my risk. If I cancel repairs before completion, a tear down and reassembly fee of <span id="out-teardown2">the fee listed above</span> will be applied.</p>
+                            <div class="signs">
+                                <div class="slot sign-line">Customer signature:</div>
+                                <div class="slot sign-line">Date:</div>
+                            </div>
+                        </div>
+
+                        <div class="paper-footer">Review all entries and obtain the customer's signature before beginning work.</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="portal.js"></script>
+</body>
+</html>

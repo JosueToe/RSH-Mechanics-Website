@@ -11,6 +11,9 @@ Allow: /images/
 Disallow: /netlify.toml
 Disallow: /_redirects
 Disallow: /.netlify/
+Disallow: /portal.html
+Disallow: /portal.js
+Disallow: /portal.css
 
 # Sitemap
 Sitemap: https://rsgmobilemechanics.netlify.app/sitemap.xml

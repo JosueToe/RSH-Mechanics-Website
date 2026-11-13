@@ -35,6 +35,13 @@
 - [ ] Deploy site (automatic - no build process needed)
 - [ ] Verify deployment at `.netlify.app` URL
 
+### 2b. Staff Portal (Netlify Identity)
+- [ ] Site → Identity → Enable Identity
+- [ ] Set registration to Invite only
+- [ ] Invite mechanic email(s)
+- [ ] Confirm `/portal.html` login works
+- [ ] Test Save draft, PDF, Print, Image, Word, Email/Share on phone
+
 ### 3. Custom Domain (Optional)
 - [ ] Add custom domain in Netlify settings
 - [ ] Configure DNS settings

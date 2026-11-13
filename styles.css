@@ -948,6 +948,22 @@ body {
     transform: translateY(-1px);
 }
 
+.footer-bottom .staff-portal-link {
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    opacity: 0.65;
+}
+
+.footer-bottom .staff-portal-link a {
+    color: var(--light-gray);
+    text-decoration: none;
+}
+
+.footer-bottom .staff-portal-link a:hover {
+    color: var(--white);
+    text-decoration: underline;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .company-name {
