@@ -106,7 +106,7 @@
       }
     }
     </script>
-    <!-- Invite/reset tokens must reach the staff portal (Identity widget lives there) -->
+    <!-- Invite/reset tokens must reach the staff portal -->
     <script>
         (function () {
             var h = window.location.hash || '';
@@ -121,6 +121,12 @@
     </script>
 </head>
 <body>
+    <noscript>
+        <p style="padding:1rem;font-family:sans-serif;background:#fff3cd">
+            JavaScript is required for staff invites.
+            Open <a href="/portal.html">/portal.html</a> and paste your invite link there.
+        </p>
+    </noscript>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">

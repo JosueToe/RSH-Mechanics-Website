@@ -82,9 +82,30 @@ button, input, select, textarea { font: inherit; }
 
 .login-card h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 .login-card p { color: var(--medium-gray); font-size: 0.95rem; margin-bottom: 1.1rem; }
-.login-hint { font-size: 0.8rem !important; }
-.local-preview { margin-top: 1rem; text-align: left; }
-.local-preview hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+.login-card .field {
+    text-align: left;
+    margin-bottom: 0.85rem;
+}
+.login-card .field label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    color: var(--dark-gray);
+}
+.login-card .field input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.85rem;
+    font-size: 1rem;
+}
+.login-error {
+    color: var(--dark-red) !important;
+    font-size: 0.85rem !important;
+    margin-top: 0.85rem !important;
+    margin-bottom: 0 !important;
+}
 .back-home {
     display: inline-block;
     margin-top: 1.25rem;

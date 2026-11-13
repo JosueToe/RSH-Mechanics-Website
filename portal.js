@@ -35,13 +35,42 @@
         userEmailEl.textContent = '';
     }
 
-    function identityHashType() {
-        const h = location.hash || '';
-        if (h.includes('invite_token=')) return 'invite';
-        if (h.includes('recovery_token=')) return 'recovery';
-        if (h.includes('confirmation_token=')) return 'confirmation';
-        if (h.includes('access_token=')) return 'login';
-        return '';
+    function hashParams() {
+        const raw = (location.hash || '').replace(/^#/, '');
+        return new URLSearchParams(raw);
+    }
+
+    function getInviteToken() {
+        return hashParams().get('invite_token') || '';
+    }
+
+    function getRecoveryToken() {
+        return hashParams().get('recovery_token') || '';
+    }
+
+    function clearAuthHash() {
+        history.replaceState(null, '', location.pathname + location.search);
+    }
+
+    function showPanel(which) {
+        const login = $('login-panel');
+        const invite = $('invite-panel');
+        const recovery = $('recovery-panel');
+        if (login) login.hidden = which !== 'login';
+        if (invite) invite.hidden = which !== 'invite';
+        if (recovery) recovery.hidden = which !== 'recovery';
+    }
+
+    function setError(id, message) {
+        const el = $(id);
+        if (!el) return;
+        if (message) {
+            el.hidden = false;
+            el.textContent = message;
+        } else {
+            el.hidden = true;
+            el.textContent = '';
+        }
     }
 
     function initAuth() {
@@ -50,35 +79,131 @@
             return;
         }
 
+        // Show password UI immediately if this is an invite/reset link
+        if (getInviteToken()) {
+            showLogin();
+            showPanel('invite');
+        } else if (getRecoveryToken()) {
+            showLogin();
+            showPanel('recovery');
+        } else {
+            showPanel('login');
+        }
+
         netlifyIdentity.on('init', (user) => {
             if (user) {
                 showApp(user.email);
                 return;
             }
             showLogin();
-            // Invite / reset links open the password form automatically
-            const kind = identityHashType();
-            if (kind === 'invite' || kind === 'recovery' || kind === 'confirmation') {
-                netlifyIdentity.open(kind === 'recovery' ? 'recovery' : 'signup');
-                showToast(kind === 'invite'
-                    ? 'Set your password to accept the invite'
-                    : 'Complete the account form to continue');
-            }
+            if (getInviteToken()) showPanel('invite');
+            else if (getRecoveryToken()) showPanel('recovery');
+            else showPanel('login');
         });
         netlifyIdentity.on('login', (user) => {
             showApp(user.email);
-            netlifyIdentity.close();
-            if (identityHashType()) {
-                history.replaceState(null, '', location.pathname + location.search);
-            }
+            try { netlifyIdentity.close(); } catch (_) { /* ignore */ }
+            clearAuthHash();
         });
-        netlifyIdentity.on('logout', () => showLogin());
+        netlifyIdentity.on('logout', () => {
+            showLogin();
+            showPanel('login');
+        });
+        netlifyIdentity.on('error', (err) => {
+            console.error(err);
+            showToast(err?.message || 'Identity error', true);
+        });
         netlifyIdentity.init();
+    }
+
+    async function acceptInvite() {
+        const token = getInviteToken();
+        const password = $('invite-password')?.value || '';
+        const password2 = $('invite-password2')?.value || '';
+        setError('invite-error', '');
+
+        if (!token) {
+            setError('invite-error', 'Invite link is missing or expired. Ask for a new invite.');
+            return;
+        }
+        if (password.length < 6) {
+            setError('invite-error', 'Password must be at least 6 characters.');
+            return;
+        }
+        if (password !== password2) {
+            setError('invite-error', 'Passwords do not match.');
+            return;
+        }
+        if (!window.netlifyIdentity?.gotrue) {
+            setError('invite-error', 'Identity is still loading — wait a second and try again.');
+            return;
+        }
+
+        const btn = $('btn-accept-invite');
+        if (btn) btn.disabled = true;
+        try {
+            const user = await netlifyIdentity.gotrue.acceptInvite(token, password);
+            clearAuthHash();
+            showApp(user?.email || 'Signed in');
+            showToast('Account created — you are signed in');
+        } catch (err) {
+            console.error(err);
+            setError('invite-error', err?.message || 'Could not accept invite. Request a new invite and try again.');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    async function resetPassword() {
+        const token = getRecoveryToken();
+        const password = $('recovery-password')?.value || '';
+        const password2 = $('recovery-password2')?.value || '';
+        setError('recovery-error', '');
+
+        if (!token) {
+            setError('recovery-error', 'Reset link is missing or expired.');
+            return;
+        }
+        if (password.length < 6) {
+            setError('recovery-error', 'Password must be at least 6 characters.');
+            return;
+        }
+        if (password !== password2) {
+            setError('recovery-error', 'Passwords do not match.');
+            return;
+        }
+        if (!window.netlifyIdentity?.gotrue) {
+            setError('recovery-error', 'Identity is still loading — wait a second and try again.');
+            return;
+        }
+
+        const btn = $('btn-reset-password');
+        if (btn) btn.disabled = true;
+        try {
+            const user = await netlifyIdentity.gotrue.recover(token, password);
+            clearAuthHash();
+            showApp(user?.email || 'Signed in');
+            showToast('Password updated — you are signed in');
+        } catch (err) {
+            console.error(err);
+            setError('recovery-error', err?.message || 'Could not reset password. Request a new reset email.');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
     }
 
     $('btn-login').addEventListener('click', () => {
         if (window.netlifyIdentity) netlifyIdentity.open('login');
         else showToast('Enable Netlify Identity in the site dashboard.', true);
+    });
+
+    $('btn-accept-invite')?.addEventListener('click', () => acceptInvite());
+    $('btn-reset-password')?.addEventListener('click', () => resetPassword());
+    $('invite-password2')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') acceptInvite();
+    });
+    $('recovery-password2')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') resetPassword();
     });
 
     $('btn-logout').addEventListener('click', () => {
