@@ -39,8 +39,10 @@
 - [ ] Site → Identity → Enable Identity
 - [ ] Set registration to Invite only
 - [ ] Invite mechanic email(s)
-- [ ] Confirm `/portal.html` login works
-- [ ] Test Save draft, PDF, Print, Image, Word, Email/Share on phone
+- [ ] Click Accept invite → lands on `/portal.html` → set password dialog appears
+- [ ] After password set, staff form is usable (not stuck on the public homepage)
+- [ ] Confirm later visits to `/portal.html` login work
+- [ ] Test PDF, Print, Image, Word on phone
 
 ### 3. Custom Domain (Optional)
 - [ ] Add custom domain in Netlify settings

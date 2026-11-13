@@ -19,52 +19,11 @@
     <div id="login-screen" class="login-screen">
         <div class="login-card">
             <img src="images/rsg-logo.jpg" alt="RSG Mobile Mechanics" class="login-logo">
-
-            <!-- Normal sign-in -->
-            <div id="login-panel">
-                <h1>Staff Portal</h1>
-                <p>Sign in to create work authorizations and estimates.</p>
-                <button type="button" id="btn-login" class="btn btn-primary btn-block">
-                    <i class="fas fa-sign-in-alt"></i> Sign in with Netlify
-                </button>
-            </div>
-
-            <!-- Invite: set password (shown when #invite_token= is in the URL) -->
-            <div id="invite-panel" hidden>
-                <h1>Accept invite</h1>
-                <p>Create a password for your staff account, then you’ll be signed in.</p>
-                <div class="field">
-                    <label for="invite-password">Password</label>
-                    <input id="invite-password" type="password" autocomplete="new-password" minlength="6" required>
-                </div>
-                <div class="field">
-                    <label for="invite-password2">Confirm password</label>
-                    <input id="invite-password2" type="password" autocomplete="new-password" minlength="6" required>
-                </div>
-                <button type="button" id="btn-accept-invite" class="btn btn-primary btn-block">
-                    Create password &amp; sign in
-                </button>
-                <p id="invite-error" class="login-error" hidden></p>
-            </div>
-
-            <!-- Password recovery -->
-            <div id="recovery-panel" hidden>
-                <h1>Reset password</h1>
-                <p>Choose a new password for your staff account.</p>
-                <div class="field">
-                    <label for="recovery-password">New password</label>
-                    <input id="recovery-password" type="password" autocomplete="new-password" minlength="6" required>
-                </div>
-                <div class="field">
-                    <label for="recovery-password2">Confirm password</label>
-                    <input id="recovery-password2" type="password" autocomplete="new-password" minlength="6" required>
-                </div>
-                <button type="button" id="btn-reset-password" class="btn btn-primary btn-block">
-                    Save new password
-                </button>
-                <p id="recovery-error" class="login-error" hidden></p>
-            </div>
-
+            <h1>Staff Portal</h1>
+            <p>Sign in to create work authorizations and estimates.</p>
+            <button type="button" id="btn-login" class="btn btn-primary btn-block">
+                <i class="fas fa-sign-in-alt"></i> Sign in with Netlify
+            </button>
             <a href="/" class="back-home"><i class="fas fa-arrow-left"></i> Back to website</a>
         </div>
     </div>
