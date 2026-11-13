@@ -106,27 +106,138 @@
       }
     }
     </script>
-    <!-- Invite/reset tokens must reach the staff portal -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        #staff-invite-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: linear-gradient(160deg, #1e293b 0%, #334155 40%, #e2e8f0 100%);
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            font-family: Inter, system-ui, sans-serif;
+        }
+        #staff-invite-overlay.open { display: flex; }
+        #staff-invite-overlay .card {
+            width: min(420px, 100%);
+            background: #fff;
+            border-radius: 1rem;
+            padding: 1.75rem;
+            box-shadow: 0 4px 16px rgba(24, 48, 74, 0.12);
+            text-align: center;
+        }
+        #staff-invite-overlay h1 { font-size: 1.4rem; margin: 0 0 0.5rem; color: #2d3748; }
+        #staff-invite-overlay p { color: #4a5568; font-size: 0.95rem; margin: 0 0 1rem; }
+        #staff-invite-overlay label {
+            display: block; text-align: left; font-size: 0.8rem; font-weight: 700;
+            margin: 0 0 0.35rem; color: #2d3748;
+        }
+        #staff-invite-overlay input {
+            width: 100%; box-sizing: border-box; border: 1px solid #d7dee6;
+            border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.85rem; font-size: 1rem;
+        }
+        #staff-invite-overlay button {
+            width: 100%; border: 0; border-radius: 0.5rem; padding: 0.85rem 1rem;
+            background: #e53e3e; color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+        }
+        #staff-invite-overlay .err { color: #c53030; font-size: 0.85rem; margin-top: 0.75rem; display: none; }
+        #staff-invite-overlay .err.show { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Shown when the Netlify invite email lands on the homepage -->
+    <div id="staff-invite-overlay" aria-live="polite">
+        <div class="card">
+            <h1 id="staff-invite-title">Accept invite</h1>
+            <p id="staff-invite-copy">Create a password for your staff account.</p>
+            <label for="staff-invite-pass">Password</label>
+            <input id="staff-invite-pass" type="password" autocomplete="new-password" minlength="6">
+            <label for="staff-invite-pass2">Confirm password</label>
+            <input id="staff-invite-pass2" type="password" autocomplete="new-password" minlength="6">
+            <button type="button" id="staff-invite-submit">Create password &amp; continue</button>
+            <p id="staff-invite-err" class="err"></p>
+        </div>
+    </div>
     <script>
         (function () {
-            var h = window.location.hash || '';
-            if (
-                h.indexOf('invite_token=') !== -1 ||
-                h.indexOf('recovery_token=') !== -1 ||
-                h.indexOf('confirmation_token=') !== -1
-            ) {
-                window.location.replace('/portal.html' + h);
+            var params = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+            var inviteToken = params.get('invite_token') || '';
+            var recoveryToken = params.get('recovery_token') || '';
+            if (inviteToken) try { sessionStorage.setItem('rsg_invite_token', inviteToken); } catch (e) {}
+            if (recoveryToken) try { sessionStorage.setItem('rsg_recovery_token', recoveryToken); } catch (e) {}
+
+            if (!inviteToken && !recoveryToken) return;
+
+            var overlay = document.getElementById('staff-invite-overlay');
+            var title = document.getElementById('staff-invite-title');
+            var copy = document.getElementById('staff-invite-copy');
+            var err = document.getElementById('staff-invite-err');
+            var btn = document.getElementById('staff-invite-submit');
+            overlay.classList.add('open');
+            document.documentElement.style.overflow = 'hidden';
+
+            if (recoveryToken) {
+                title.textContent = 'Reset password';
+                copy.textContent = 'Choose a new password for your staff account.';
+                btn.textContent = 'Save new password';
+            }
+
+            function showErr(msg) {
+                err.textContent = msg || '';
+                err.classList.toggle('show', !!msg);
+            }
+
+            function done(email) {
+                try {
+                    sessionStorage.removeItem('rsg_invite_token');
+                    sessionStorage.removeItem('rsg_recovery_token');
+                } catch (e) {}
+                history.replaceState(null, '', location.pathname);
+                location.replace('/portal.html');
+            }
+
+            btn.addEventListener('click', function () {
+                var pass = document.getElementById('staff-invite-pass').value || '';
+                var pass2 = document.getElementById('staff-invite-pass2').value || '';
+                showErr('');
+                if (pass.length < 6) return showErr('Password must be at least 6 characters.');
+                if (pass !== pass2) return showErr('Passwords do not match.');
+                if (!window.netlifyIdentity) return showErr('Identity is still loading — try again in a moment.');
+
+                btn.disabled = true;
+                var gotrueReady = function () {
+                    var gotrue = window.netlifyIdentity.gotrue;
+                    if (!gotrue) {
+                        showErr('Identity failed to load. Refresh and try again.');
+                        btn.disabled = false;
+                        return;
+                    }
+                    var req = inviteToken
+                        ? gotrue.acceptInvite(inviteToken, pass)
+                        : gotrue.recover(recoveryToken, pass);
+                    req.then(function (user) {
+                        done(user && user.email);
+                    }).catch(function (e) {
+                        console.error(e);
+                        showErr((e && e.message) || 'Could not complete. Ask for a new invite link.');
+                        btn.disabled = false;
+                    });
+                };
+
+                if (window.netlifyIdentity.gotrue) gotrueReady();
+                else {
+                    window.netlifyIdentity.on('init', gotrueReady);
+                    try { window.netlifyIdentity.init(); } catch (e) { gotrueReady(); }
+                }
+            });
+
+            if (window.netlifyIdentity) {
+                try { window.netlifyIdentity.init(); } catch (e) {}
             }
         })();
     </script>
-</head>
-<body>
-    <noscript>
-        <p style="padding:1rem;font-family:sans-serif;background:#fff3cd">
-            JavaScript is required for staff invites.
-            Open <a href="/portal.html">/portal.html</a> and paste your invite link there.
-        </p>
-    </noscript>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">

@@ -40,15 +40,38 @@
         return new URLSearchParams(raw);
     }
 
+    // Capture tokens BEFORE Identity widget can strip them from the URL hash
+    (function captureAuthTokens() {
+        const params = hashParams();
+        const invite = params.get('invite_token');
+        const recovery = params.get('recovery_token');
+        try {
+            if (invite) sessionStorage.setItem('rsg_invite_token', invite);
+            if (recovery) sessionStorage.setItem('rsg_recovery_token', recovery);
+        } catch (_) { /* ignore */ }
+    })();
+
     function getInviteToken() {
-        return hashParams().get('invite_token') || '';
+        try {
+            return hashParams().get('invite_token') || sessionStorage.getItem('rsg_invite_token') || '';
+        } catch (_) {
+            return hashParams().get('invite_token') || '';
+        }
     }
 
     function getRecoveryToken() {
-        return hashParams().get('recovery_token') || '';
+        try {
+            return hashParams().get('recovery_token') || sessionStorage.getItem('rsg_recovery_token') || '';
+        } catch (_) {
+            return hashParams().get('recovery_token') || '';
+        }
     }
 
     function clearAuthHash() {
+        try {
+            sessionStorage.removeItem('rsg_invite_token');
+            sessionStorage.removeItem('rsg_recovery_token');
+        } catch (_) { /* ignore */ }
         history.replaceState(null, '', location.pathname + location.search);
     }
 

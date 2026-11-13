@@ -28,11 +28,14 @@ Mechanics sign in at `/portal.html`, fill a mobile-friendly form, and watch a li
 
 1. Netlify dashboard → **Identity** → **Enable Identity**
 2. Set registration to **Invite only**
-3. Invite the mechanic’s email
-4. Open the invite → **Accept the invite** → set a password on `/portal.html` (the homepage forwards invite links there)
-5. Sign in at `https://yoursite.netlify.app/portal.html` (or your domain `/portal.html`)
+3. **Identity → Emails** → set Invitation template to `/emails/invitation.html` and Recovery to `/emails/recovery.html` (so links go to `/portal.html`, not only the homepage)
+4. Invite the mechanic’s email
+5. Open the invite → set a password on the form that appears → you’ll enter the portal
+6. Later sign-ins: `https://yoursite.netlify.app/portal.html` (or your domain `/portal.html`)
 
 Drafts autosave in the browser on that device.
+
+If an old invite still opens the homepage, the homepage now shows the same **Accept invite / set password** form there too.
 
 ### 1. Add Your Images
 
