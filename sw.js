@@ -1,10 +1,8 @@
 // Service Worker for RSG Mobile Mechanics
-// Network-first for HTML so Identity invite links always get the latest page.
+// Network-first for HTML/JS/CSS so portal login and deploys are never stuck on stale files.
 
-const CACHE_NAME = 'rsg-mobile-mechanics-v3';
+const CACHE_NAME = 'rsg-mobile-mechanics-v4';
 const urlsToCache = [
-  '/styles.css',
-  '/script.js',
   '/images/rsg-logo.jpg',
   '/images/reiner-with-van.jpg'
 ];
@@ -32,27 +30,30 @@ self.addEventListener('activate', function (event) {
   );
 });
 
-function isHtmlRequest(request) {
+function isNetworkFirst(request) {
   if (request.mode === 'navigate') return true;
   const accept = request.headers.get('accept') || '';
-  return accept.includes('text/html');
+  if (accept.includes('text/html')) return true;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return false;
+  // Never cache-first portal or site scripts/styles
+  if (/\.(?:js|css)(?:$|\?)/i.test(url.pathname)) return true;
+  if (/^\/portal/i.test(url.pathname)) return true;
+  return false;
 }
 
 self.addEventListener('fetch', function (event) {
   const request = event.request;
   if (request.method !== 'GET') return;
 
-  // Always prefer network for HTML (invite tokens, portal, deploys)
-  if (isHtmlRequest(request)) {
+  if (isNetworkFirst(request)) {
     event.respondWith(
       fetch(request)
         .then(function (response) {
           return response;
         })
         .catch(function () {
-          return caches.match(request).then(function (cached) {
-            return cached || caches.match('/index.html');
-          });
+          return caches.match(request);
         })
     );
     return;

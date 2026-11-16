@@ -19,20 +19,50 @@
         showToast._t = setTimeout(() => { statusToast.hidden = true; }, 3200);
     }
 
+    const JUST_LOGGED_IN_KEY = 'rsg_portal_just_logged_in';
+
     function showApp(email) {
-        loginScreen.hidden = true;
-        loginScreen.style.display = 'none';
-        app.hidden = false;
-        app.style.display = '';
-        userEmailEl.textContent = email || 'Signed in';
+        if (loginScreen) {
+            loginScreen.hidden = true;
+            loginScreen.setAttribute('hidden', '');
+            loginScreen.style.setProperty('display', 'none', 'important');
+        }
+        if (app) {
+            app.hidden = false;
+            app.removeAttribute('hidden');
+            app.style.setProperty('display', 'block', 'important');
+        }
+        if (userEmailEl) userEmailEl.textContent = email || 'Signed in';
+        document.body.classList.add('portal-authed');
+        document.body.classList.remove('portal-login');
+        try { window.scrollTo(0, 0); } catch (_) { /* ignore */ }
     }
 
     function showLogin() {
-        app.hidden = true;
-        app.style.display = 'none';
-        loginScreen.hidden = false;
-        loginScreen.style.display = '';
-        userEmailEl.textContent = '';
+        if (app) {
+            app.hidden = true;
+            app.setAttribute('hidden', '');
+            app.style.setProperty('display', 'none', 'important');
+        }
+        if (loginScreen) {
+            loginScreen.hidden = false;
+            loginScreen.removeAttribute('hidden');
+            loginScreen.style.removeProperty('display');
+        }
+        if (userEmailEl) userEmailEl.textContent = '';
+        document.body.classList.add('portal-login');
+        document.body.classList.remove('portal-authed');
+    }
+
+    function closeIdentityWidget() {
+        try {
+            if (window.netlifyIdentity) netlifyIdentity.close();
+        } catch (_) { /* ignore */ }
+        setTimeout(() => {
+            try {
+                if (window.netlifyIdentity) netlifyIdentity.close();
+            } catch (_) { /* ignore */ }
+        }, 50);
     }
 
     function hasIdentityHash() {
@@ -55,6 +85,13 @@
             if (user) {
                 showApp(user.email);
                 clearIdentityHash();
+                closeIdentityWidget();
+                try {
+                    if (sessionStorage.getItem(JUST_LOGGED_IN_KEY) === '1') {
+                        sessionStorage.removeItem(JUST_LOGGED_IN_KEY);
+                        showToast('Signed in — welcome to the staff portal');
+                    }
+                } catch (_) { /* ignore */ }
                 return;
             }
 
@@ -67,19 +104,30 @@
                 } else if ((location.hash || '').includes('recovery_token=')) {
                     showToast('Choose a new password to recover your account');
                 }
-                // Widget usually auto-opens from the hash; nudge if it does not
                 setTimeout(() => {
                     if (!netlifyIdentity.currentUser()) netlifyIdentity.open();
                 }, 150);
             }
         });
-        netlifyIdentity.on('login', (user) => {
-            showApp(user.email);
+
+        // After sign-in, hard-refresh once so we never stay stuck on the
+        // Identity "Logged in as…" modal with a hidden portal behind it.
+        netlifyIdentity.on('login', () => {
+            closeIdentityWidget();
+            try { sessionStorage.setItem(JUST_LOGGED_IN_KEY, '1'); } catch (_) { /* ignore */ }
             clearIdentityHash();
-            netlifyIdentity.close();
-            showToast('Signed in — welcome to the staff portal');
+            const url = new URL(location.href);
+            url.hash = '';
+            url.searchParams.set('_', String(Date.now()));
+            location.replace(url.pathname + url.search);
         });
-        netlifyIdentity.on('logout', () => showLogin());
+
+        netlifyIdentity.on('logout', () => {
+            try { sessionStorage.removeItem(JUST_LOGGED_IN_KEY); } catch (_) { /* ignore */ }
+            showLogin();
+            closeIdentityWidget();
+        });
+
         netlifyIdentity.init();
     }
 

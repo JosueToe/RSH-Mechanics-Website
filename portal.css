@@ -54,6 +54,10 @@ button, input, select, textarea { font: inherit; }
 .btn-sm { padding: 0.45rem 0.75rem; font-size: 0.82rem; font-weight: 600; }
 
 /* Login */
+body.portal-authed #login-screen { display: none !important; }
+body.portal-authed #app { display: block !important; }
+body.portal-login #app { display: none !important; }
+
 .login-screen {
     min-height: 100vh;
     display: grid;
