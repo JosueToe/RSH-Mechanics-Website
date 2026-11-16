@@ -19,8 +19,6 @@
         showToast._t = setTimeout(() => { statusToast.hidden = true; }, 3200);
     }
 
-    const JUST_LOGGED_IN_KEY = 'rsg_portal_just_logged_in';
-
     function showApp(email) {
         if (loginScreen) {
             loginScreen.hidden = true;
@@ -70,8 +68,8 @@
     }
 
     function clearIdentityHash() {
-        if (hasIdentityHash()) {
-            history.replaceState(null, '', location.pathname + location.search);
+        if (hasIdentityHash() || location.search.includes('_=')) {
+            history.replaceState(null, '', location.pathname);
         }
     }
 
@@ -81,23 +79,19 @@
             return;
         }
 
+        // Start on login shell until Identity reports a session
+        showLogin();
+
         netlifyIdentity.on('init', (user) => {
             if (user) {
                 showApp(user.email);
                 clearIdentityHash();
                 closeIdentityWidget();
-                try {
-                    if (sessionStorage.getItem(JUST_LOGGED_IN_KEY) === '1') {
-                        sessionStorage.removeItem(JUST_LOGGED_IN_KEY);
-                        showToast('Signed in — welcome to the staff portal');
-                    }
-                } catch (_) { /* ignore */ }
                 return;
             }
 
             showLogin();
 
-            // Invite / recovery links include a hash token — open set-password UI
             if (hasIdentityHash()) {
                 if ((location.hash || '').includes('invite_token=')) {
                     showToast('Set your password to activate your staff account');
@@ -110,20 +104,15 @@
             }
         });
 
-        // After sign-in, hard-refresh once so we never stay stuck on the
-        // Identity "Logged in as…" modal with a hidden portal behind it.
-        netlifyIdentity.on('login', () => {
-            closeIdentityWidget();
-            try { sessionStorage.setItem(JUST_LOGGED_IN_KEY, '1'); } catch (_) { /* ignore */ }
+        // Switch UI in place — do NOT reload (Identity can re-fire login on load)
+        netlifyIdentity.on('login', (user) => {
+            showApp(user && user.email);
             clearIdentityHash();
-            const url = new URL(location.href);
-            url.hash = '';
-            url.searchParams.set('_', String(Date.now()));
-            location.replace(url.pathname + url.search);
+            closeIdentityWidget();
+            showToast('Signed in — welcome to the staff portal');
         });
 
         netlifyIdentity.on('logout', () => {
-            try { sessionStorage.removeItem(JUST_LOGGED_IN_KEY); } catch (_) { /* ignore */ }
             showLogin();
             closeIdentityWidget();
         });
