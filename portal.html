@@ -284,37 +284,6 @@
                             <input id="sublet" type="number" step="0.01" min="0" data-out="sublet" inputmode="decimal">
                         </div>
                         <div class="field">
-                            <label for="extracharges">Extra charges (USD)</label>
-                            <input id="extracharges" type="number" step="0.01" min="0" data-out="extracharges" inputmode="decimal">
-                        </div>
-                        <div class="field">
-                            <label for="extrachargesnote">Extra charges description</label>
-                            <input id="extrachargesnote" data-out="extrachargesnote" placeholder="What the extra charge is for">
-                        </div>
-                        <div class="field">
-                            <label for="extraApprovedBy">Extra charges — approved by</label>
-                            <input id="extraApprovedBy" data-out="extraApprovedBy" placeholder="Customer / authorized person name">
-                        </div>
-                        <div class="field">
-                            <label for="extraApprovalDate">Approval date</label>
-                            <input id="extraApprovalDate" type="date" data-out="extraApprovalDate">
-                        </div>
-                        <div class="field">
-                            <label for="extraApprovalTime">Approval time</label>
-                            <input id="extraApprovalTime" type="time" data-out="extraApprovalTime">
-                        </div>
-                        <div class="field">
-                            <label>Approval method</label>
-                            <div class="choices inline">
-                                <label><input type="radio" name="extraApprovalMethod" value="Oral"> Oral</label>
-                                <label><input type="radio" name="extraApprovalMethod" value="Written"> Written</label>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label for="extraTakenBy">Approval taken by</label>
-                            <input id="extraTakenBy" data-out="extraTakenBy" placeholder="Staff member who took the approval">
-                        </div>
-                        <div class="field">
                             <label for="supplies">Shop supplies (USD)</label>
                             <input id="supplies" type="number" step="0.01" min="0" data-out="supplies" inputmode="decimal">
                         </div>
@@ -388,8 +357,14 @@
                             </div>
                             <div class="notice-choice"><span id="check-none">☐</span><span>I DO NOT REQUEST A WRITTEN ESTIMATE.</span></div>
                             <div class="sign-row">
-                                <div class="sign-line">SIGNED <span id="out-noticeSign" class="sig-fill"></span></div>
-                                <div class="sign-line">DATE <span id="out-noticeSignDate" class="sig-fill"></span></div>
+                                <div class="sign-field">
+                                    <span class="sign-label">SIGNED</span>
+                                    <span class="sign-uline"><span id="out-noticeSign" class="sig-fill"></span></span>
+                                </div>
+                                <div class="sign-field">
+                                    <span class="sign-label">DATE</span>
+                                    <span class="sign-uline"><span id="out-noticeSignDate" class="sig-fill"></span></span>
+                                </div>
                             </div>
                         </div>
 
@@ -506,19 +481,8 @@
                                 <div class="slot"><b>Sublet / other: </b>USD <span id="out-sublet"></span></div>
                                 <div class="slot"><b>Shop supplies: </b>USD <span id="out-supplies"></span></div>
                             </div>
-                            <div class="prow">
-                                <div class="slot"><b>Extra charges: </b>USD <span id="out-extracharges"></span></div>
-                                <div class="slot span-2"><b>Extra charges for: </b><span id="out-extrachargesnote"></span></div>
-                                <div class="slot"><b>Tax: </b>USD <span id="out-tax"></span></div>
-                            </div>
-                            <div class="prow">
-                                <div class="slot"><b>Approved by: </b><span id="out-extraApprovedBy"></span></div>
-                                <div class="slot"><b>Approval date: </b><span id="out-extraApprovalDate"></span></div>
-                                <div class="slot"><b>Approval time: </b><span id="out-extraApprovalTime"></span></div>
-                                <div class="slot"><b>Oral / Written: </b><span id="am-oral">☐ Oral</span> &nbsp; <span id="am-written">☐ Written</span></div>
-                            </div>
                             <div class="prow two">
-                                <div class="slot"><b>Approval taken by: </b><span id="out-extraTakenBy"></span></div>
+                                <div class="slot"><b>Tax: </b>USD <span id="out-tax"></span></div>
                                 <div class="slot"></div>
                             </div>
                             <div class="prow two">
@@ -530,8 +494,14 @@
                             <p class="legal">***Florida law requires a USD 1.00 fee for each new tire sold (FS 403.718) and USD 1.50 for each new or remanufactured battery sold (FS 403.7185).</p>
                             <p class="legal">Estimate good for 30 days. Not responsible for damage caused by theft, fire or acts of nature. I authorize the above repairs, including sublet work, and necessary materials. Shop employees may operate my vehicle for testing, inspection and delivery at my risk. If I cancel repairs before completion, a tear down and reassembly fee of <span id="out-teardown2">the fee listed above</span> will be applied.</p>
                             <div class="signs">
-                                <div class="slot sign-line">Customer signature: <span id="out-custSign" class="sig-fill"></span></div>
-                                <div class="slot sign-line">Date: <span id="out-custSignDate" class="sig-fill"></span></div>
+                                <div class="sign-field">
+                                    <span class="sign-label">Customer signature:</span>
+                                    <span class="sign-uline"><span id="out-custSign" class="sig-fill"></span></span>
+                                </div>
+                                <div class="sign-field">
+                                    <span class="sign-label">Date:</span>
+                                    <span class="sign-uline"><span id="out-custSignDate" class="sig-fill"></span></span>
+                                </div>
                             </div>
                         </div>
 

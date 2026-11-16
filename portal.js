@@ -143,7 +143,7 @@
 
     const TOTAL_TRIGGER_IDS = [
         'laborcharge', 'sublet', 'supplies', 'tax', 'diag',
-        'extracharges', 'mandatedfee', 'teardown'
+        'mandatedfee', 'teardown'
     ];
 
     document.querySelectorAll('[data-out]').forEach((input) => {
@@ -166,16 +166,6 @@
         x.addEventListener('change', updateEstimate);
     });
     $('limit').addEventListener('input', updateEstimate);
-
-    function updateExtraApprovalMethod() {
-        const val = document.querySelector('input[name="extraApprovalMethod"]:checked')?.value || '';
-        $('am-oral').textContent = val === 'Oral' ? '☒ Oral' : '☐ Oral';
-        $('am-written').textContent = val === 'Written' ? '☒ Written' : '☐ Written';
-    }
-
-    document.querySelectorAll('input[name="extraApprovalMethod"]').forEach((x) => {
-        x.addEventListener('change', updateExtraApprovalMethod);
-    });
 
     function updateSaveParts() {
         const val = document.querySelector('input[name="saveparts"]:checked')?.value || '';
@@ -338,10 +328,9 @@
         const sublet = Number($('sublet').value) || 0;
         const supplies = Number($('supplies').value) || 0;
         const diag = Number($('diag').value) || 0;
-        const extra = Number($('extracharges').value) || 0;
         const mandated = Number($('mandatedfee').value) || 0;
         const tax = Number($('tax').value) || 0;
-        const subtotal = parts + labor + sublet + supplies + diag + extra + mandated;
+        const subtotal = parts + labor + sublet + supplies + diag + mandated;
         if (!$('subtotal').dataset.manual) {
             $('subtotal').value = subtotal ? subtotal.toFixed(2) : '';
             put('subtotal', $('subtotal').value);
@@ -377,7 +366,6 @@
         document.querySelectorAll('input[name="estimate"]').forEach((r) => { r.checked = false; });
         document.querySelectorAll('input[name="saveparts"]').forEach((r) => { r.checked = false; });
         document.querySelectorAll('input[name="laborbasis"]').forEach((r) => { r.checked = false; });
-        document.querySelectorAll('input[name="extraApprovalMethod"]').forEach((r) => { r.checked = false; });
         document.querySelectorAll('[data-out]').forEach((x) => put(x.dataset.out, ''));
         put('laborcharge2', '');
         updateTeardownSentence('');
@@ -385,7 +373,6 @@
         updateEstimate();
         updateSaveParts();
         updateLaborBasis();
-        updateExtraApprovalMethod();
         addRepair();
         addRepair();
         addPart();
@@ -417,7 +404,6 @@
         data.estimate = document.querySelector('input[name="estimate"]:checked')?.value || '';
         data.saveparts = document.querySelector('input[name="saveparts"]:checked')?.value || '';
         data.laborbasis = document.querySelector('input[name="laborbasis"]:checked')?.value || '';
-        data.extraApprovalMethod = document.querySelector('input[name="extraApprovalMethod"]:checked')?.value || '';
         data.parts = getParts();
         data.repairs = getRepairs();
         return data;
@@ -429,7 +415,7 @@
             if (!raw) return false;
             const data = JSON.parse(raw);
             Object.keys(data).forEach((key) => {
-                if (['parts', 'repairs', 'estimate', 'saveparts', 'laborbasis', 'extraApprovalMethod'].includes(key)) return;
+                if (['parts', 'repairs', 'estimate', 'saveparts', 'laborbasis'].includes(key)) return;
                 const el = document.querySelector(`[data-out="${key}"]`);
                 if (el) {
                     el.value = data[key] ?? '';
@@ -448,10 +434,6 @@
                 const r = document.querySelector(`input[name="laborbasis"][value="${data.laborbasis}"]`);
                 if (r) r.checked = true;
             }
-            if (data.extraApprovalMethod) {
-                const r = document.querySelector(`input[name="extraApprovalMethod"][value="${data.extraApprovalMethod}"]`);
-                if (r) r.checked = true;
-            }
             $('parts-entry').innerHTML = '';
             const parts = data.parts?.length ? data.parts : [null, null, null];
             parts.forEach((p) => addPart(p || undefined));
@@ -461,7 +443,6 @@
             updateEstimate();
             updateSaveParts();
             updateLaborBasis();
-            updateExtraApprovalMethod();
             updateTeardownSentence($('teardown').value);
             updateDocTitle($('estimateInvoice').value);
             maybeAutoTotal();
@@ -717,7 +698,6 @@
         updateEstimate();
         updateSaveParts();
         updateLaborBasis();
-        updateExtraApprovalMethod();
         updateTeardownSentence('');
         updateDocTitle('');
         renderParts();
