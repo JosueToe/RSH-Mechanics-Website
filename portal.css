@@ -481,6 +481,13 @@ button, input, select, textarea { font: inherit; }
     min-height: 28px;
 }
 
+.sig-fill {
+    font-family: 'Segoe Script', 'Bradley Hand', 'Comic Sans MS', cursive;
+    font-size: 1.15em;
+    font-weight: 500;
+    color: #111;
+}
+
 .sign-row {
     display: grid;
     grid-template-columns: 2fr 1fr;

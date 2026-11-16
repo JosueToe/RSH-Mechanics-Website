@@ -126,6 +126,14 @@
                             <label for="limit">Do-not-exceed amount (USD)</label>
                             <input id="limit" type="number" step="0.01" min="0" data-out="limit" inputmode="decimal">
                         </div>
+                        <div class="field">
+                            <label for="noticeSign">Disclosure signed (name)</label>
+                            <input id="noticeSign" data-out="noticeSign" autocomplete="name" placeholder="Customer signs the estimate notice">
+                        </div>
+                        <div class="field">
+                            <label for="noticeSignDate">Disclosure signed date</label>
+                            <input id="noticeSignDate" type="date" data-out="noticeSignDate">
+                        </div>
                     </div>
                 </div>
 
@@ -333,6 +341,21 @@
                     </div>
                 </div>
 
+                <div class="group">
+                    <h3>Authorization signature</h3>
+                    <div class="grid">
+                        <div class="field">
+                            <label for="custSign">Customer signature (typed name)</label>
+                            <input id="custSign" data-out="custSign" autocomplete="name" placeholder="Customer full name as signature">
+                        </div>
+                        <div class="field">
+                            <label for="custSignDate">Signature date</label>
+                            <input id="custSignDate" type="date" data-out="custSignDate">
+                        </div>
+                    </div>
+                    <p class="hint">Fills the authorization signature lines at the bottom of the document.</p>
+                </div>
+
                 <div class="panel-actions">
                     <button type="button" class="btn btn-primary" data-action="pdf">
                         <i class="fas fa-file-pdf"></i> Save PDF
@@ -365,8 +388,8 @@
                             </div>
                             <div class="notice-choice"><span id="check-none">☐</span><span>I DO NOT REQUEST A WRITTEN ESTIMATE.</span></div>
                             <div class="sign-row">
-                                <div class="sign-line">SIGNED</div>
-                                <div class="sign-line">DATE</div>
+                                <div class="sign-line">SIGNED <span id="out-noticeSign" class="sig-fill"></span></div>
+                                <div class="sign-line">DATE <span id="out-noticeSignDate" class="sig-fill"></span></div>
                             </div>
                         </div>
 
@@ -507,8 +530,8 @@
                             <p class="legal">***Florida law requires a USD 1.00 fee for each new tire sold (FS 403.718) and USD 1.50 for each new or remanufactured battery sold (FS 403.7185).</p>
                             <p class="legal">Estimate good for 30 days. Not responsible for damage caused by theft, fire or acts of nature. I authorize the above repairs, including sublet work, and necessary materials. Shop employees may operate my vehicle for testing, inspection and delivery at my risk. If I cancel repairs before completion, a tear down and reassembly fee of <span id="out-teardown2">the fee listed above</span> will be applied.</p>
                             <div class="signs">
-                                <div class="slot sign-line">Customer signature:</div>
-                                <div class="slot sign-line">Date:</div>
+                                <div class="slot sign-line">Customer signature: <span id="out-custSign" class="sig-fill"></span></div>
+                                <div class="slot sign-line">Date: <span id="out-custSignDate" class="sig-fill"></span></div>
                             </div>
                         </div>
 
