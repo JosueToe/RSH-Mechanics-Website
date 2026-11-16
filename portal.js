@@ -563,6 +563,15 @@
         }
     }
 
+    function isMobileClient() {
+        const ua = navigator.userAgent || '';
+        if (/Android|iPhone|iPad|iPod/i.test(ua)) return true;
+        // iPadOS desktop-style UA
+        if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return true;
+        return window.matchMedia('(pointer: coarse)').matches
+            && window.matchMedia('(max-width: 900px)').matches;
+    }
+
     async function exportImage() {
         try {
             showToast('Generating image…');
@@ -570,7 +579,30 @@
             const blob = await new Promise((resolve, reject) => {
                 canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Empty image'))), 'image/png');
             });
-            downloadBlob(blob, `${fileBase()}.png`);
+            const filename = `${fileBase()}.png`;
+
+            // Phones: native share sheet (Save Image / Photos). PC: download file.
+            if (isMobileClient() && navigator.share && navigator.canShare) {
+                const file = new File([blob], filename, { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'RSG Work Authorization'
+                        });
+                        showToast('Choose Save Image / Photos in the share sheet');
+                        return;
+                    } catch (shareErr) {
+                        if (shareErr && shareErr.name === 'AbortError') {
+                            showToast('Share cancelled');
+                            return;
+                        }
+                        // Fall through to download if share fails
+                    }
+                }
+            }
+
+            downloadBlob(blob, filename);
             showToast('Image downloaded');
         } catch (err) {
             console.error(err);
